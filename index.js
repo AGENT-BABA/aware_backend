@@ -118,34 +118,29 @@ app.get('/api/data', authenticate, async (req, res) => {
 });
 
 app.get('/api/anomalies', authenticate, async (req, res) => {
-  // try {
-  //   const data = await readCSV(path.join(__dirname, process.env.CSV_PATH));
-  //   // Simple rule-based anomaly detection for POC
-  //   // If cpu_utilization > 70 or error_rate > 5 or memory_usage > 80
-  //   const anomalies = data
-  //     .map((d, i) => ({ ...d, index: i }))
-  //     .filter(d => parseFloat(d.cpu_utilization) > 70 || parseFloat(d.error_rate) > 5)
-  //     .slice(-5); // Last 5 anomalies
-  //   res.json(anomalies);
-  // } catch (err) {
-  //   res.status(500).json({ message: 'Failed to fetch anomalies' });
-  // }
-
-// use the api to the deployed ml model
-
-
+  try {
+    const data = await readCSV(path.join(__dirname, process.env.CSV_PATH));
+    const anomalies = data
+      .map((d, i) => ({ ...d, index: i }))
+      .filter(d => parseFloat(d.cpu_utilization) > 70 || parseFloat(d.error_rate) > 5)
+      .slice(-5);
+    res.json(anomalies);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch anomalies' });
+  }
 });
 
 app.get('/api/actions', authenticate, async (req, res) => {
-  // Mock actions taken based on anomalies
-  // const actions = [
-  //   { timestamp: new Date().toISOString(), action: 'Auto-scaled EC2 Cluster', reason: 'High CPU utilization detected', impact: 'Reduced latency by 15%' },
-  //   { timestamp: new Date().toISOString(), action: 'Cleaned Unused S3 Objects', reason: 'Storage free below 15%', impact: 'Saved $45.20/month' },
-  //   { timestamp: new Date().toISOString(), action: 'Provisioned Reserved Instances', reason: 'Consistent long-term usage pattern', impact: 'Projected 40% cost reduction' }
-  // ];
-  // res.json(actions);
-
-// this will be given by the rag pipeline
+  try {
+    const actions = [
+      { timestamp: new Date().toISOString(), action: 'Auto-scaled EC2 Cluster', reason: 'High CPU utilization detected', impact: 'Reduced latency by 15%' },
+      { timestamp: new Date().toISOString(), action: 'Cleaned Unused S3 Objects', reason: 'Storage free below 15%', impact: 'Saved $45.20/month' },
+      { timestamp: new Date().toISOString(), action: 'Provisioned Reserved Instances', reason: 'Consistent long-term usage pattern', impact: 'Projected 40% cost reduction' }
+    ];
+    res.json(actions);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch actions' });
+  }
 });
 
 // Chatbot endpoint (Mock LLM)
