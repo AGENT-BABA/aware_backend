@@ -10,6 +10,12 @@ const path = require('path');
 
 dotenv.config();
 
+const mongodbUri = process.env.MONGODB_URI;
+if (!mongodbUri || mongodbUri.includes('<db_password>')) {
+  console.error('MongoDB URI is not configured correctly in .env. Replace <db_password> with your actual database password.');
+  process.exit(1);
+}
+
 const app = express();
 app.use(cors());
 app.use(express.json());
