@@ -29,7 +29,7 @@ app.use((req, res, next) => {
 // MongoDB User Schema
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
-  email:{type: String, required:true, unique:true},
+  email: { type: String, default: '' },
   password: { type: String, required: true },
   awsAccessKey: { type: String, default: '' },
   awsSecretKey: { type: String, default: '' },
@@ -60,9 +60,9 @@ const authenticate = (req, res, next) => {
 // Auth Routes
 app.post('/api/signup', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, email = '' } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ username, password: hashedPassword });
+    const user = new User({ username, email, password: hashedPassword });
     await user.save();
     res.status(201).json({ message: 'User created' });
   } catch (err) {
@@ -78,7 +78,7 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
-    res.json({ token, username: user.username, hasKeys: !!user.awsAccessKey });
+    res.json({ token, username: user.username, email: user.email, hasKeys: !!user.awsAccessKey });
   } catch (err) {
     res.status(500).json({ message: 'Login failed' });
   }
